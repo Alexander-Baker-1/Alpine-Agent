@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CheckoutSimulator from './CheckoutSimulator';
 
-function Cart({ items, total, onRemove }) {
+function Cart({ items, total, onRemove, userIntent }) {
     const [showCheckout, setShowCheckout] = useState(false);
     
     // Group items by retailer
@@ -77,6 +77,34 @@ function Cart({ items, total, onRemove }) {
                   <span>Total:</span>
                   <span className="text-blue-600">${total}</span>
                 </div>
+                {/* Budget Info & Optimizer */}
+                {userIntent && (
+                <div className="mb-4 p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100">
+                    <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-700">Budget Status</span>
+                    <span className={`text-sm font-bold ${
+                        total <= userIntent.budget ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                        ${total} / ${userIntent.budget}
+                    </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div
+                        className={`h-2 rounded-full transition-all duration-500 ${
+                        total <= userIntent.budget 
+                            ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+                            : 'bg-gradient-to-r from-red-500 to-orange-500'
+                        }`}
+                        style={{ width: `${Math.min((total / userIntent.budget) * 100, 100)}%` }}
+                    />
+                    </div>
+                    {total > userIntent.budget && (
+                    <p className="text-xs text-red-600 mt-2">
+                        💡 Over budget by ${total - userIntent.budget}. Try removing items or finding cheaper alternatives.
+                    </p>
+                    )}  
+                </div>
+                )}
                 <button
                   onClick={() => setShowCheckout(true)}
                   className="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"

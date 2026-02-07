@@ -13,12 +13,10 @@ function ChatInterface({ onIntentParsed }) {
     const userMessage = input.trim();
     setInput('');
     
-    // Add user message to chat
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setLoading(true);
 
     try {
-      // Parse intent from user message
       const response = await fetch('http://localhost:5000/api/chat/intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,13 +26,11 @@ function ChatInterface({ onIntentParsed }) {
       const data = await response.json();
 
       if (data.success && data.intent) {
-        // Send parsed intent to parent component
         onIntentParsed(data.intent);
         
-        // Add assistant response
         setMessages(prev => [...prev, {
           role: 'assistant',
-          content: `Got it! I'm searching for skiing gear with:\n• Budget: $${data.intent.budget}\n• Size: ${data.intent.size}\n• Delivery: ${data.intent.delivery_days} days\n• Warmth level: ${data.intent.warmth}\n\nLet me find the best options for you...`
+          content: `Perfect! I'm searching for skiing gear with:\n• Budget: $${data.intent.budget}\n• Size: ${data.intent.size}\n• Delivery: ${data.intent.delivery_days} days\n• Warmth level: ${data.intent.warmth}\n\nFinding the best options for you...`
         }]);
       } else {
         setMessages(prev => [...prev, {
@@ -61,25 +57,27 @@ function ChatInterface({ onIntentParsed }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
-      {/* Header */}
-      <div className="p-4 border-b bg-blue-600 text-white rounded-t-lg">
-        <h2 className="text-xl font-bold">Shopping Assistant</h2>
-        <p className="text-sm text-blue-100">Tell me what you need</p>
+    <div className="flex flex-col h-[400px] lg:h-[500px] bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">      {/* Header */}
+      <div className="p-5 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="flex items-center gap-2 text-white">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <h2 className="text-lg font-bold">Shopping Assistant</h2>
+        </div>
+        <p className="text-blue-100 text-sm mt-1">Tell me what you need</p>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50">
         {messages.map((msg, idx) => (
           <div
             key={idx}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] p-3 rounded-lg whitespace-pre-line ${
+              className={`max-w-[85%] p-4 rounded-2xl whitespace-pre-line shadow-sm ${
                 msg.role === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-br-md'
+                  : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md'
               }`}
             >
               {msg.content}
@@ -88,29 +86,36 @@ function ChatInterface({ onIntentParsed }) {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
-              <span className="animate-pulse">Thinking...</span>
+            <div className="bg-white text-gray-800 p-4 rounded-2xl rounded-bl-md border border-gray-200 shadow-sm">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <span className="text-sm text-gray-500">Thinking...</span>
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t">
+      <div className="p-4 bg-white border-t border-gray-100">
         <div className="flex gap-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="E.g., I need a ski outfit, budget $400, size M, delivery in 5 days"
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="E.g., I need a ski outfit, budget $400, size M..."
+            className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             disabled={loading}
           />
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
           >
             Send
           </button>
