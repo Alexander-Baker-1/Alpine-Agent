@@ -225,6 +225,6 @@ MIT License - See LICENSE file for details
 
 ---
 
-**Project Repository**: [[GitHub URL]](https://github.com/Alexander-Baker-1/Alpine-Agent.git)  
+**Project Repository**: [GitHub URL](https://github.com/Alexander-Baker-1/Alpine-Agent.git)  
 **Demo Video**: [Video URL]  
 **Live Demo**: [Deployment URL]
